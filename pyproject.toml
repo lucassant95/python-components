@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "python-components"
-version = "0.1.0"
+version = "0.1.1"
 description = "A lightweight Python framework for managing the lifecycle and dependencies of stateful components"
 readme = "README.md"
 requires-python = ">=3.13"
