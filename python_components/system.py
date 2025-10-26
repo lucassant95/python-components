@@ -12,11 +12,11 @@ class System(Component):
         self.system_map = system_map
         self.state: str = "INITIALIZED"
 
-    def start(self):
+    def start(self, system: "System"):
         """Start all components in dependency order."""
         init_order = self.initialization_order()
         for component in init_order:
-            component.start()
+            component.start(self)
         self.state = "STARTED"
 
     def shutdown(self):
@@ -55,6 +55,13 @@ class System(Component):
             raise ValueError(
                 "Dependency graph has cycles; cannot determine initialization order."
             )
+
+    def get_component(self, name: str) -> Component:
+        """Retrieve a component by its name from the system map."""
+        try:
+            return self.system_map[name]
+        except KeyError as ke:
+            raise KeyError(f"Component '{name}' not found in system map") from ke
 
 
 """

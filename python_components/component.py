@@ -14,16 +14,19 @@ class Component(ABC):
 
     def __init__(self):
         """Initialize a component with an empty dependency list."""
+        from python_components import System
+
+        self.system: System
         self.dependencies: list[str] = []
 
     @abstractmethod
-    def start(self):
+    def start(self, system: "Component"):
         """Connect to the component's resources.
 
         This method should initialize any runtime state, establish connections,
         open files, etc. It will be called after all dependencies have been started.
         """
-        pass
+        self.system = system
 
     @abstractmethod
     def shutdown(self):

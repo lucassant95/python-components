@@ -16,7 +16,7 @@ class MockLifecycleComponent(Component):
         self.start_order = None
         self.shutdown_order = None
 
-    def start(self):
+    def start(self, system: Component):
         self.started = True
 
     def shutdown(self):
@@ -44,7 +44,7 @@ def test_system_starts_components():
     system_map = {"comp1": comp1, "comp2": comp2}
     system = System(system_map)
 
-    system.start()
+    system.start(system)
 
     assert comp1.started is True
     assert comp2.started is True
@@ -59,7 +59,7 @@ def test_system_shuts_down_components():
     system_map = {"comp1": comp1, "comp2": comp2}
     system = System(system_map)
 
-    system.start()
+    system.start(system)
     system.shutdown()
 
     assert comp1.shutdown_called is True
@@ -76,7 +76,7 @@ def test_system_dependency_order():
             super().__init__()
             self.name = name
 
-        def start(self):
+        def start(self, system: Component):
             start_sequence.append(self.name)
 
         def shutdown(self):
@@ -95,7 +95,7 @@ def test_system_dependency_order():
     }
 
     system = System(system_map)
-    system.start()
+    system.start(system)
 
     # comp1 should start first (no dependencies)
     assert start_sequence[0] == "comp1"
@@ -117,7 +117,7 @@ def test_system_shutdown_reverse_order():
             super().__init__()
             self.name = name
 
-        def start(self):
+        def start(self, system: System):
             pass
 
         def shutdown(self):
@@ -134,7 +134,7 @@ def test_system_shutdown_reverse_order():
     }
 
     system = System(system_map)
-    system.start()
+    system.start(system)
     system.shutdown()
 
     # Shutdown should be in reverse order: comp3 -> comp2 -> comp1
@@ -149,7 +149,7 @@ def test_system_missing_dependency():
     system = System(system_map)
 
     with pytest.raises(KeyError, match="Component dependency 'nonexistent' not found"):
-        system.start()
+        system.start(system)
 
 
 def test_system_circular_dependency():
@@ -167,7 +167,7 @@ def test_system_circular_dependency():
     system = System(system_map)
 
     with pytest.raises(ValueError, match="Dependency graph has cycles"):
-        system.start()
+        system.start(system)
 
 
 def test_system_complex_dependency_graph():
@@ -192,7 +192,7 @@ def test_system_complex_dependency_graph():
     }
 
     system = System(system_map)
-    system.start()
+    system.start(system)
 
     # All components should be started
     assert all(comp.started for comp in [comp1, comp2, comp3, comp4])
