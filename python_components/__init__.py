@@ -4,4 +4,4 @@ from python_components.component import Component
 from python_components.system import System
 
 __all__ = ["Component", "System"]
-__version__ = "0.2.0"
+__version__ = "0.3.0"
