@@ -30,7 +30,7 @@ pip install python-components
 ### 1. Define Your Components
 
 ```python
-from src.component import Component
+from python_components import Component
 
 class Database(Component):
     def __init__(self, host: str, port: int):
@@ -71,7 +71,7 @@ class WebServer(Component):
 ### 2. Compose Your System
 
 ```python
-from src.system import System
+from python_components import System
 
 # Build the system
 system_map = {
@@ -126,8 +126,7 @@ A **system** is a collection of components with declared dependencies. The `Syst
 ## Example: Complete Application
 
 ```python
-from src.component import Component
-from src.system import System
+from python_components import Component, System
 
 class Database(Component):
     def __init__(self, connection_string: str):
@@ -223,7 +222,7 @@ uv run pytest
 To run tests with coverage:
 
 ```bash
-uv run pytest --cov=src --cov-report=term-missing
+uv run pytest --cov=python_components --cov-report=term-missing
 ```
 
 ### Installing Development Dependencies
