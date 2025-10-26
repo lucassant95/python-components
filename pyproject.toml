@@ -1,0 +1,47 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "python-components"
+version = "0.1.0"
+description = "A lightweight Python framework for managing the lifecycle and dependencies of stateful components"
+readme = "README.md"
+requires-python = ">=3.13"
+license = "MIT"
+keywords = ["component", "lifecycle", "dependency-injection", "framework", "system"]
+authors = [
+    { name = "Lucas Sant'Anna", email = "lucassant95@gmail.com" }
+]
+maintainers = [
+    { name = "Lucas Sant'Anna", email = "lucssant95@gmail.com" }
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Typing :: Typed",
+]
+dependencies = ["networkx>=3.5,<4.0"]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/python-components"
+Documentation = "https://github.com/yourusername/python-components#readme"
+Repository = "https://github.com/yourusername/python-components"
+Issues = "https://github.com/yourusername/python-components/issues"
+Changelog = "https://github.com/yourusername/python-components/releases"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+    "ruff>=0.14.2",
+    "twine>=6.2.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+

@@ -1,0 +1,18 @@
+.venv
+poetry.lock
+uv.lock
+.idea/*
+.idea
+.vscode
+__pycache__/
+*.pyc
+.DS_Store
+.env
+.env.*
+uv.toml
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+.pytest_cache/

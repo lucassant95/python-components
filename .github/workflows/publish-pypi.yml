@@ -1,0 +1,122 @@
+name: Publish Python Package to PyPI
+
+on:
+  # Trigger on release publication
+  release:
+    types: [published]
+  
+  # Allow manual trigger
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Publish to PyPI or TestPyPI'
+        required: true
+        default: 'testpypi'
+        type: choice
+        options:
+          - testpypi
+          - pypi
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest    
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      
+      - name: Install uv
+        run: pip install uv
+      
+      - name: Install dependencies
+        run: uv sync --all-groups
+      
+      - name: Run tests
+        run: uv run pytest
+      
+      - name: Check code style with ruff
+        run: uv run ruff check src/
+
+  build:
+    name: Build Distribution
+    needs: test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      
+      - name: Install uv
+        run: pip install uv
+      
+      - name: Build package
+        run: uv build
+      
+      - name: Store distribution packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+  publish-testpypi:
+    name: Publish to TestPyPI
+    # Only run on manual trigger with testpypi environment
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'testpypi'
+    needs: build
+    runs-on: ubuntu-latest
+    
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/python-components
+    
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
+    
+    steps:
+      - name: Download distribution packages
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+      
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
+  publish-pypi:
+    name: Publish to PyPI
+    # Run on release publication OR manual trigger with pypi environment
+    if: |
+      github.event_name == 'release' || 
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'pypi')
+    needs: build
+    runs-on: ubuntu-latest
+    
+    environment:
+      name: pypi
+      url: https://pypi.org/p/python-components
+    
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
+    
+    steps:
+      - name: Download distribution packages
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+      
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
